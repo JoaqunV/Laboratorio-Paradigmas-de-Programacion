@@ -1,88 +1,31 @@
-;====Nivel Alto==========
-;========================
 
-(define (listarMedicosTratantesPaciente run) (define (ObtenIdentificadorPaciente run Pacientes)
-    (if (null? Pacientes) null (if(equal? run (obtenerRunPaciente (car Pacientes))) (obtenerIDPaciente (car Pacientes)) (ObtenIdentificadorPaciente run (cdr Pacientes)))))
-  (define (ObtenerIdentificadorDoctor Id DiagnosticosPacientes)
-    (if (null? DiagnosticosPacientes)
-        null
-        (if(equal? Id (obtenerIdPacienteDiagnosticoPaciente (car DiagnosticosPacientes)))
-           (cons (obtenerIdDoctorDiagnosticoDiagnosticoPaciente (car DiagnosticosPacientes)) (ObtenerIdentificadorDoctor Id (cdr DiagnosticosPacientes)))
-           (ObtenerIdentificadorDoctor Id (cdr DiagnosticosPacientes))
-           )
-        )
-    )
+(define (diagnosticoPacienteMedico nombre run) 
   
-  (define (ObtenerDatosNecesarios Id Doctores)
-    (if (null? Doctores)
-        null
-        (if(equal? Id (obtenerIDDoctor (car Doctores)))
-           (string-append (obtenerRunDoctor (car Doctores)) ", " (getNombreDoc (car Doctores)) ", " (getApellidoDoc (car Doctores)))
-           (ObtenerDatosNecesarios Id (cdr Doctores))
-           )
-        )
-    )
-   (define (CrearListaDeString ListaDeDoctores)
-    (if (null? ListaDeDoctores)
-        null
-        (cons (ObtenerDatosNecesarios (car ListaDeDoctores) Doctores) (CrearListaDeString (cdr ListaDeDoctores)))
-        )
-    )
-  (CrearListaDeString (ObtenerIdentificadorDoctor (ObtenIdentificadorPaciente run Pacientes) DiagnosticosPacientes))
-;==========
-
-
-;==================================================
-(define (diagnosticoPacienteMedico nombreDiag rutDoc) ;recibe 2 string retorna lista de string
-  
-  (define (conseguirIdDiag nombreDiag Diagnosticos);obtencion datos utiles recursivamente
+  (define (obtenerIdDiags nombre Diagnosticos)
     (if (null? Diagnosticos)
         null
-        (if(equal? nombreDiag (getDescripDiag (car Diagnosticos)))
-           (getIdDiag (car Diagnosticos))
-           (conseguirIdDiag nombreDiag (cdr Diagnosticos))
+        (if(equal? nombre (obtenerDescripcionDiagnostico (car Diagnosticos)))
+           (obtenerIDDiagnostico (car Diagnosticos))
+           (obtenerIdDiags nombre (cdr Diagnosticos))
            )
         )
     )
   
-  (define (conseguirIdDoc run Doctores);obtencion datos utiles recursivamente
+  (define (obtenerIdDoc run Doctores)
     (if (null? Doctores)
         null
         (if(equal? run (obtenerRunDoctor (car Doctores)))
            (obtenerIDDoctor (car Doctores))
-           (conseguirIdDoc rutDoc (cdr Doctores))
+           (obtenerIdDoc run (cdr Doctores))
            )
-        )
+        )	
     )
   
-  (define (ObtenIdentificadorPaciente idDiag DocAlta DiagnosticosPacientes);obtencion datos utiles recursivamente
+  (define (ObtenIdentificadorPaciente Id doctorDeAlta DiagnosticosPacientes)
     (if(null? DiagnosticosPacientes)
        null
-       (if(and (equal? idDiag (getIdDiagDP (car DiagnosticosPacientes))) 
-               (equal? DocAlta (getDoctorAlta (car DiagnosticosPacientes))) )
-          (cons (obtenerIdPacienteDiagnosticoPaciente (car DiagnosticosPacientes)) (ObtenIdentificadorPaciente idDiag DocAlta (cdr DiagnosticosPacientes)))
-          (ObtenIdentificadorPaciente idDiag DocAlta (cdr DiagnosticosPacientes))
-          )
-       )
-    )
+       (if(and (equal? Id (getIdDiagDP (car DiagnosticosPacientes))) 
+               (equal? doctorDeAlta (getDoctorAlta (car DiagnosticosPacientes))) )
+          (cons (obtenerIdPacienteDiagnosticoPaciente (car DiagnosticosPacientes)) (ObtenIdentificadorPaciente Id doctorDeAlta (cdr DiagnosticosPacientes)))
+          (ObtenIdentificadorPaciente Id doctorDeAlta (cdr DiagnosticosPacientes))))) (define (ObtenerDatosNecesarios Id Pacientes) (if(null? Pacientes) null (if(equal? Id (obtenerIDPaciente (car Pacientes))) (string-append (obtenerRunPaciente(car Pacientes)) ", " (obtenerNombrePaciente (car Pacientes)) ", " (obtenerApellidoPaciente (car Pacientes))) (ObtenerDatosNecesarios Id (cdr Pacientes))))) (define (CrearListaDeString listaDePacientes) (if (null? listaDePacientes) null (cons (ObtenerDatosNecesarios (car listaDePacientes) Pacientes) (CrearListaDeString (cdr listaDePacientes))))) (CrearListaDeString (ObtenIdentificadorPaciente (obtenerIdDiags nombre Diagnosticos) (obtenerIdDoc run Doctores) DiagnosticosPacientes)))
   
-  (define (ObtenerDatosNecesarios Id Pacientes);obtencion datos pedidos
-    (if(null? Pacientes)
-       null
-       (if(equal? Id (obtenerIDPaciente (car Pacientes)))
-          ;creacion string
-          (string-append (obtenerRunPaciente(car Pacientes)) ", " (getNombrePac (car Pacientes)) ", " (getApellidoPac (car Pacientes)))
-          (ObtenerDatosNecesarios Id (cdr Pacientes))
-          )
-       )
-    )
-  (define (CrearListaDeString listPacs);creacion lista string
-    (if (null? listPacs)
-        null
-        (cons (ObtenerDatosNecesarios (car listPacs) Pacientes) (CrearListaDeString (cdr listPacs)))
-        )
-    )
-  ;llamado funcion
-  (CrearListaDeString (ObtenIdentificadorPaciente (conseguirIdDiag nombreDiag Diagnosticos) (conseguirIdDoc rutDoc Doctores) DiagnosticosPacientes))
-)
- 

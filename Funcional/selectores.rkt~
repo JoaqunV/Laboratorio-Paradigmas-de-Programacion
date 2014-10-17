@@ -26,7 +26,7 @@
 (define (obtenerDescripcionTratamiento Tratamientos) (if (isTratamiento? Tratamientos) (caddr Tratamientos) #f))
 (define (obtenerNivelRiesgoTratamiento Tratamientos) (if (isTratamiento? Tratamientos) (cadddr Tratamientos) #f))
 
-;Selectores para los datos relacionados de Pacientes&Diagnostico
+;Selectores para los datos relacionados de Pacientes&Tratamientos
 (define (obtenerIDDiagnosticoPaciente DiagnosticosPacientes) (if (isDiagnosticoPaciente? DiagnosticosPacientes) (car DiagnosticosPacientes) #f))
 (define (obtenerIdPacienteDiagnosticoPaciente DiagnosticosPacientes) (if (isDiagnosticoPaciente? DiagnosticosPacientes) (cadr DiagnosticosPacientes) #f))
 (define (obtenerIdDiagnosticoDiagnosticoPaciente DiagnosticosPacientes) (if (isDiagnosticoPaciente? DiagnosticosPacientes) (caddr DiagnosticosPacientes) #f))
