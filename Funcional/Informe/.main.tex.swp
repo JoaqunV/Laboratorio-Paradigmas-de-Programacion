@@ -1,0 +1,286 @@
+\documentclass[12pt,letterpaper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{natbib}
+\usepackage{graphicx}
+\usepackage{indentfirst}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{comment}
+\usepackage{url}
+\usepackage[left=4cm,right=2.5cm,top=4cm,bottom=2.5cm]{geometry}
+
+\setlength{\parindent}{2cm}
+\renewcommand{\baselinestretch}{1.5}
+\renewcommand\contentsname{Índice de contenidos}
+\renewcommand\refname{Referencias}
+\renewcommand\figurename{Figura}
+
+\usepackage{graphicx}
+\begin{document}
+
+\newpage
+\vspace*{-.5cm}
+\begin{picture}(18,4)(0,30)
+	\put(350,-20){\includegraphics[scale=0.25]{./images/LogoUsach.pdf}}
+\end{picture}
+
+\sloppy
+\thispagestyle{empty}
+\vspace*{-1.6cm}
+
+\begin{center}
+	{\bf \mbox{\large UNIVERSIDAD DE SANTIAGO DE CHILE}}\\
+	{\bf \mbox{FACULTAD DE INGENIER\'IA}}\\
+	{\bf \mbox{DEPARTAMENTO DE INGENIER\'IA INFORM\'ATICA}}\\
+\end{center}
+
+	\vspace*{2cm}
+	\par
+	\begin{center}
+	\large
+		\textsl{Paradigmas de Programaci\'on}
+	\end{center}
+
+	\vspace{0.5cm}
+	\begin{center}
+	\large
+		\textbf{Informe N$^{\circ}$2\\
+		Sistema de gestión fastClinic}
+	\end{center}
+	
+	\vspace{3cm}
+	\begin{flushright}
+		\begin{tabular}[t]{l l}
+			Nombre: & Joaquín Ignacio Villagra Pacheco \\
+			R.U.N.: & 18.847.934-0\\
+			Carrera: & Ingeniería Civil Informática\\
+			A\~no estimado de egreso: & 2018\\
+			E-mail: & joaquin.Villagra@usach.cl\\
+			Profesor: & José Allende\\
+			Ayudante: & Maurcio Rojas
+
+		\end{tabular}
+	\end{flushright}
+	\begin{center}
+		\vspace{1.5cm}
+		Santiago, Chile\\
+		Viernes, 17 de Octubre de 2014
+	\end{center}
+
+
+
+\newpage
+\tableofcontents
+\thispagestyle{empty}
+
+\newpage
+\renewcommand{\thepage}{\arabic{page}}
+\setcounter{page}{1}
+
+\section{INTRODUCCIÓN}
+Un recinto clínico requiere generar un sistema de gestión de sus flujos de información. Se posee una base de datos existente, distribuida en diversos archivos de texto y se solicita a un estudiante de ingeniería informática generar un software, escrito en lenguaje de programación Scheme, bajo el paradigma de programación funcional, que sea capas de manejar un conjunto definido de funcionalidades. Para ello se le detallan reglas y formatos que deben seguir la compilación, ejecución y entrega de resultados de dicho software.
+\\
+\\
+El presente documento resume el trabajo realizado en el desarrollo del software solicitado, a su vez explica cada funcionalidad implementada y los problemas que surgieron en el desarrollo de las mismas.  Este documento se compone de los siguientes capítulos:
+\begin{itemize}
+\item Descripción del problema, sección donde se especifican cada funcionalidad a desarrollar, reglas y formatos exigidos.
+\item Descripción de solución, sección donde se detalla cada una de las funciones y/o procedimientos desarrollados para cumplir las operatividades exigidas.
+\item Conclusiones, sección donde se realiza una visión global de lo aprendido, problemas y/o errores presentes en el desarrollo y el cumplimiento de los objetivos planteados.
+\item Referencias, sección donde se informa cada una de las fuentes de información consultadas.
+\item Anexo Codigo Fuente.
+\end{itemize}
+
+\section{DESCRIPCIÓN DEL PROBLEMA}
+
+	\subsection{Motivación}
+	Para el recinto clínico \textsl{FastClinic} es de imperiosa necesidad manejar su información de una manera sencilla, rápida y centralizada. Su antiguo sistema informático, sin soporte, ya no cubría sus necesidades y por es por esta razón que se ven en la necesidad de solicitar el desarrollo de un nuevo software, teniendo como base de registros archivos de textos heredados del antiguo sistema.
+
+	\subsection{Especificaciones del proceso de atención}
+	Para el desarrollo del nuevo sistema, la directiva de \textsl{FastClinic} nos ha entregado cierta información relevante, referente al proceso de atención de los pacientes y las relaciones existentes entre los distintos datos que se registran.
+	\begin{enumerate}
+	\item Un paciente es atendido por uno o más médicos y un médico puede atender múltiples pacientes.
+	\item Un paciente puede llegar con uno o varios motivos de consultas.
+	\item Un paciente puede tener uno o varios diagnósticos.
+	\item Los diagnósticos son efectuados por un médico responsable en una fecha (dd/mm/aaaa) particular.
+	\item Los pacientes pueden recibir distintos tratamientos recomendados por un doctor. Los tratamientos están normalizados para cada diagnóstico.
+	\item Los diagnósticos pueden ser tratados con uno o más tratamientos. Los tratamientos pueden ser comunes para uno o más diagnósticos.
+	\item Los pacientes reciben el alta de un diagnóstico en una fecha (dd/mm/aaaa) particular y bajo la responsabilidad de un médico (que puede ser diferente del médico que hizo el diagnóstico original).
+	\end{enumerate}
+
+	\subsection{Funcionalidades solicitadas}
+	Dentro del enunciado del proyecto a desarrollar, se detallan diversas funcionalidades que pueden ser implementadas. No se establece que deben implementarse todas, quedando a criterio del tiempo del estudiante decidir cual programar. \\
+	En el siguiente capitulo, se especifican las funcionalidades implementadas como parte de la solución. En el caso que se quiera conocer el abanico de funciones que podrían haber sido implementadas, favor dirigirse al enunciado del proyecto.
+
+	\subsection{Dominio del problema}
+	Por parte del estudiante de ingeniería, existe un control medio del problema ya que gracias a lo aprendido en cursos anteriores puede aplicar la lógica de resolución de problemas, identificando las similitudes fuertes o debiles entre las diversas funcionalidades solicitadas para, de esta forma, aprovechar de mejor manera el tiempo invertido. Por otra parte,  el manejo del lenguaje scheme es una falencia, ya que estos contenidos, aunque han sido entendidos en las clases de la asignatura, no se han interiorizado en gran medida. Notemos que el cambio de paradigma es algo complicado en primera instancia y esto, genera retrasos de implementación en el proyecto. 
+
+%Nueva sección
+\section{DESCRIPCIÓN DE LA SOLUCIÓN}
+	\subsection{Propósito de la solución}
+	El proposito de nuestra solución, es generar un software de gestión que cumpla los estándares especificados por la gente de FastClinic y que sea capaz de entregar satisfacción al usuario, optimizando el tiempo invertido en los procesos productivos de dicha entidad.
+	
+	%\subsection{Características de la solución}
+	
+	\subsection{Funcionalidades implementadas}
+	A continuación se detallan cada una de las funcionalidades trabajadas, escribiendo el detalle de cada funcionalidad en el formato de documentación de Doxygen.
+	
+\begin{enumerate}
+\item @file funciones.c\\
+	  @brief obtenerNombrePaciente (Función de nivel bajo)\\
+      @param char runPaciente[]\\
+      @returns none\\
+      @verbatim \\
+    	Función que recibe como parámetro el run de un paciente e indica el nombre corrrespondiente al run del paciente ingresado. No posee retorno, ya que posee una salida directa a un archivo de texto.\\
+      @endverbatim
+\item @file funciones.c\\
+	  	@brief especialidad (Función de nivel bajo)\\
+    @param char runDoctor[]\\
+    @returns none\\
+    @verbatim \\
+    	Función que recibe como parámetro el run de un médico e indica el nombre correspondiente al run del medico ingresado. No posee retorno, ya que posee una salida directa a un archivo de texto.\\
+    @endverbatim
+\item @file funciones.c\\ 
+@brief tratamientoRiesgoso (Función de nivel bajo)\\
+    @param char argumento[]\\
+    @returns none\\
+    @verbatim \\
+    	Función que recibe como parámetro el nivel de riesgo de un tratamiento e indica el nombre corrrespondiente a todos los tratamientos que poseen dicho nivel de riesgo especificado. No posee retorno, ya que posee una salida directa a un archivo de texto.\\
+    @endverbatim 
+\item @file funciones.c\\ 
+	@brief tratamientoMasUsado (Función de nivel bajo)\\
+	@param int idEntrante\\
+    @returns none\\
+    @verbatim \\
+    	Función que recibe como parámetro un identificador, el cual sirve para diferenciar las dos aplicaciones de la función. Si el idEntrante es igual a cero, se realiza la busqueda simple del tratamiento más usado. Si no, se ejecuta la búsqueda del tratamiento más usado para un determinado diagnostico. La segunda segunda sección no esta implementada, quedando solo operativa la búsqueda simple del tratamiento más usado. \\
+    	No posee retorno, ya que posee una salida directa a un archivo de texto.\\
+    @endverbatim  
+\item @file funciones.c\\
+	@brief medicoMasAltas (Función de nivel bajo)
+    @param none\\
+    @returns none\\
+    @verbatim \\
+    	Función que obtiene el run, nombre y apellido del Medico que otorga más altas. No posee retorno, ya que posee una salida directa a un archivo de texto.\\
+    @endverbatim   
+\item @file funciones.c\\
+	@brief riesgoUltimoTratamiento (Función de nivel alto) \\
+    @param char nombre[], char apellido[]\\
+    @returns none\\
+    @verbatim \\
+    	Función que recibe como parámetro el nombre y apellido de un paciente X, y obtiene el riesgo del ultimo tratamiento que este ha recibido. No posee retorno, ya que posee una salida directa a un archivo de texto.\\
+    @endverbatim 
+\item @file funciones.c\\
+	@brief diagnosticoPacienteMedico (Función de nivel alto)\\ 
+    @param char nombreDiagnostico[], char runDoctor[]\\
+    @returns none\\
+    @verbatim \\
+    	Función que recibe como parámetro el nombre del diagnostico especificado y el run del medico diagnosticado. 
+    	Con dichos datos, realiza una búsqueda de vinculaciones, obteniendo los pacientes diagnosticados con dicho diagnostico X por el médico Y.
+    	No posee retorno, ya que posee una salida directa a un archivo de texto.\\
+    @endverbatim   
+\item @file funciones.c\\
+	@brief listarMedicosTratantesPaciente (Función de nivel alto)\\
+    @param char runPaciente[]\\
+    @returns none\\
+    @verbatim \\
+    	Función que recibe como parámetro el run de un paciente en especifico, realiza una busqueda de vinculaciones, obteniendo los datos de los médicos que han atendido al paciente indicado.
+    	Se consideran medido de diagnostico y médico que da el alta.
+    	No posee retorno, ya que posee una salida directa a un archivo de texto.\\
+    @endverbatim 
+\item @file funciones.c\\
+	@brief rutPacienteDiagnostico (Función de nivel medio)\\
+    @param char runPaciente[]\\
+    @returns none\\
+    @verbatim \\
+    	Función que recibe como parámetro el run de un paciente e indica el diagnostico mas frecuente de dicho paciente.
+    	No posee retorno, ya que posee una salida directa a un archivo de texto.\\
+    @endverbatim
+\item @file funciones.c\\
+	@brief tratamientosDiagnosticoPaciente (Función de nivel medio) \\
+    @param int idDiagnostico, int idPaciente\\
+    @returns none\\
+    @verbatim \\
+    	Función que recibe como parámetro el identificador del diagnostico recibido y el identificador del paciente que recibe dicho tratamiento.
+    	Se determina que tratamiento puede recibir el paciente a partir de su diagnostico. 
+    	No posee retorno, ya que posee una salida directa a un archivo de texto.\\
+    @endverbatim   
+
+\item@file funciones.c\\
+	@brief medicosTratantes (Función de nivel medio) \\
+    @param int idPaciente\\
+    @returns none\\
+    @verbatim \\
+    	Función que recibe como parametro el identificador de un paciente, realiza una busqueda en "BD" y entrega la información 
+    	(nombre-apellido) de todos lo médicos tratantes del paciente especificado.
+    	No posee retorno, ya que posee una salida directa a un archivo de texto.\\
+    @endverbatim      
+    
+\item @file funciones.c\\
+	@brief tratamientosPacienteCorreo (Función de nivel medio)\\
+    @param char correo[]\\
+    @returns none\\
+    @verbatim \\
+    	Función que recibe como parámetro el correo electrónico de un paciente, realiza una busqueda en "BD" y entrega una lista de todos los 
+    	tratamientos recibidos por paciente especificado.
+    	No posee retorno, ya que posee una salida directa a un archivo de texto.\\
+    @endverbatim      
+
+\item@file funciones.c\\
+	@brief eliminarPaciente (Función de nivel medio)\\
+    @param char runPaciente[]\\
+    @returns none\\
+    @verbatim \\
+    	Función que recibe como parámetro el run de un paciente, realiza una búsqueda en "BD" y elimina los registros del paciente indicado, siempre y cuando, este paciente no tenga diagnósticos en los registros del sistema.
+    	No posee retorno, ya que la operación se refleja en el archivo Paciente.txt.\\
+    @endverbatim  
+
+\item@file funciones.c\\
+	@brief eliminarMedico (Función de nivel medio)\\
+    @param char runDoctor[]\\
+    @returns none\\
+    @verbatim \\
+    	Función que recibe como parámetro el run de un medico, realiza una busqueda en "BD" y elimina los registros del médico indicado, siempre y cuando, este médico no sea responsable de diagnósticos o tratamientos vigentes.
+    	No posee retorno, ya que la operación se refleja en el archivo Doctor.txt\\
+    @endverbatim   	
+    
+\item @file funciones.c
+	@brief modificarCorreoPaciente (Función de basico)\\
+    @param char modificarCorreoPaciente[]\\
+    @returns none\\
+    @verbatim \\
+    	Función que recibe como parámetro el correo actual de un paciente y el nuevo correo a registrar.
+    	Reemplaza el correo antiguo por el nuevo correo ingresado.
+    	No posee retorno, ya que la operación realizada se refleja en el archivo Paciente.txt\\
+    @endverbatim 
+\end{enumerate}       
+
+\section{ANÁLISIS DE RESULTADOS}
+	En el desarrollo, solo se desarrollaron las funcionalidades que a juicio del estudiante fueran abordables. Es por esta razón que los resultados, teniendo en cuenta unica y exclusivamente las funcionales trabajadas, son muy buenos. Ya que cada funcionalidad desarrollada, logra dar solución a lo que se solicitó por parte de FastClinic. \\
+	Quizás, mirándolo desde otra perspectiva, no son los mejores resultados ya que no se logra dar solución a todo el abanico de funcionalidades presentadas, sin embargo se logra cubrir una gran parte de ellas, superando con creces el mínimo exigido. 
+
+\section{CONCLUSIÓN}
+Durante el desarrollo del software, se presentaron diversas complicaciones. Por una parte, los errores de redacción del enunciado del proyecto propiciaron confusiones del estudiante en cuestión y generaron retardos en la implementación de las funcionalidades solicitadas. Luego de haber "entendido" lo que se solicitaba, y faltando no más de dos días para la entrega del proyecto, llega información de aclaración de las dudas respecto de estas funcionalidades. Esta información de ultimo minuto genera un trabajo inesperado de corrección y refinamiento de procesos que no estaba contemplado en un principio. \\
+
+Todas estas complicaciones pudieron ser superadas gracias a la dedicación y el arduo trabajo desempeñado, pero hay que saber aprender de los errores y buscar un mejor manejo de los tiempos, contemplando posibles detalles de ultimo minuto.\\
+
+En cuanto al lenguaje de programación C, pese a ser un lenguaje antiguo no se queda atrás en poder de procesamiento. Esto puede verse muy bien en los sistemas operativos provenientes de UNIX, porgramados mayoritariamente en C, sistemas robustos y utilizados para tareas de alta demanda como la gestión de un servidor. \\
+
+Finalmente, se puede visualizar bajo la propia experiencia las diferencias entre los distintos paradigmas de programación, teniendo ahora como comparar objetivamente, en un ambiente real las ventajas y desventajas que nos otorga cada paradigma en cuestión.
+
+\section{REFERENCIAS}
+\begin{itemize}
+\item Andrés Marzal, Isabel Garcia. (Año no informado). Introducción a la programación con
+C. Departamento de lenguajes y sistemas informáticos: Universitat Jaume.
+\item Brian W. Kernighan and Dennis M. Ritchie. (1988). The C programming Language.
+EEUU: Prentice-Hall.
+\end{itemize}
+
+\newpage
+
+\clearpage
+\addcontentsline{toc}{section}{Referencias}
+\bibliographystyle{unsrt}
+\bibliography{references}
+
+\end{document}
