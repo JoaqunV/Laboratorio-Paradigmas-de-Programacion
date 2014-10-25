@@ -11,10 +11,12 @@
 
 ;importo Biblioteca necesaria para leer archivos de texto en formato csv (separados por comas).
 (require (planet neil/csv:2:0))
-(require "selectores.rkt")
-(require "pertenencias.rkt")
-(require "constructores.rkt")
-(require "modificadores.rkt")
+
+;Trate de separar en varios archivos pero se generaron errores con las distintas relaciones de las funciones.
+;(require "selectores.rkt")
+;(require "pertenencias.rkt")
+;(require "constructores.rkt")
+;(require "modificadores.rkt")
 
 ;Se definen las diversas listas, contenedoras de los datos de la clinica (contenido de archivos o "BD"). 
 (define Doctores (csv->list (open-input-file "Doctor.txt")))
@@ -25,138 +27,162 @@
 (define TratamientosDiagnosticos (csv->list (open-input-file "TratamientoDiagnostico.txt")))
 (define TratamientosDiagnosticosPac (csv->list (open-input-file "TratamientoDiagnosticoPaciente.txt")))
 
-;Cierro puertos de lectura de archivos
-(close-input-port Doctores)
-(close-input-port Pacientes)
-(close-input-port Diagnosticos)
-(close-input-port Tratamientos)
-(close-input-port DiagnosticosPacientes)
-(close-input-port TratamientosDiagnosticos)
-(close-input-port TratamientosDiagnosticosPac)
+;Constructor paciente
+(define (createPaciente Id run email nombre apellido fechaNac) (if (and (integer? Id) (string? run) (string? email) (string? nombre) (string? apellido) (string? fechaNac)) (list (number->string Id) run email nombre apellido fechaNac) null))
+;Constructor Doctor
+(define(createDoctor Id run email nombre apellido especialidad) (if (and (integer? Id) (string? run) (string? email) (string? nombre) (string? apellido) (string? especialidad)) (list (number->string Id) run email nombre apellido especialidad) null))
+;constructor Diagnostico
+(define(createDiagnostico Id descripcionDiagnostico nivelGravedad) (if (and (integer? Id) (string? descripcionDiagnostico) (string? nivelGravedad)) (list (number->string Id) descripcionDiagnostico nivelGravedad) null))
+;Constructor Tratamiento
+(define(createTratamiento Id nombreTratamiento descripcionTratamiento nivelDeRiesgo) (if (and (integer? Id) (string? nombreTratamiento) (string? descripcionTratamiento) (string? nivelDeRiesgo)) (list (number->string Id) nombreTratamiento descripcionTratamiento nivelDeRiesgo) null))
+;Constructor DiagnosticoPaciente
+(define(createDiagnosticoPaciente idDiagnosticoPaciente idPaciente idDiagnostico fechaDiagnostico idDoctorDiagnostico estadoDiagnostico fechaAlta idDoctorAlta detalleAlta) (if (and (integer? idDiagnosticoPaciente) (integer? idPaciente) (integer? idDiagnostico) (string? fechaDiagnostico) (integer? idDoctorDiagnostico) (string? estadoDiagnostico) (string? fechaAlta) (integer? idDoctorAlta) (string? detalleAlta)) (list (number->string idDiagnosticoPaciente) (number->string idPaciente) (number->string idDiagnostico) fechaDiagnostico (number->string idDoctorDiagnostico) estadoDiagnostico fechaAlta (number->string idDoctorAlta) detalleAlta) null))
+;Constructor TratamientoDiagnostico
+(define(createTratamientoDiagnostico idDiagnostico idTratamiento) (if (and (integer? idDiagnostico) (integer? idTratamiento)) (list (number->string idDiagnostico) (number->string idTratamiento)) null))
+;ConstructorTratamientoDiagnosticoPaciente
+(define(createTratamientoDiagnosticoPaciente Id idTratamiento idDoctor fechaInicio duracionDias resultado) (if (and (integer? Id) (integer? idTratamiento) (integer? idDoctor) (string? fechaInicio) (integer? duracionDias) (string? resultado)) (list (number->string Id) (number->string idTratamiento) (number->string idDoctor) fechaInicio (number->string duracionDias) resultado) null))
 
-;Carga de funciones de pertenencia desde archivo pertenencias.rkt
-(provide isPaciente?)
-(provide isDoctor?)
-(provide isDiagnostico?)
-(provide isTratamiento?)
-(provide isDiagnosticoPaciente?)
-(provide isTratamientoDiagnostico?)
-(provide isTratamientoDiagnosticoPaciente?)
+;Función de pertenencia para Pacientes
+(define (isPaciente? Pacientes) (and (list? Pacientes) (= (length Pacientes) 6) (not (equal? (string->number (car Pacientes)) #f)) (string? (cadr Pacientes)) (string? (caddr Pacientes)) (string? (cadddr Pacientes)) (string? (cadddr (cdr Pacientes))) (string? (cadddr (cddr Pacientes)))))
+;Función de pertenencia para Doctores
+(define (isDoctor? Doctores)(and (list? Doctores) (= (length Doctores) 6) (not (equal? (string->number (car Doctores)) #f)) (string? (cadr Doctores)) (string? (caddr Doctores)) (string? (cadddr Doctores)) (string? (cadddr (cdr Doctores))) (string? (cadddr (cddr Doctores)))))
+;Función de pertenencia para Diagnosticos
+(define (isDiagnostico? Diagnosticos) (and (list? Diagnosticos) (= (length Diagnosticos) 3) (not (equal? (string->number (car Diagnosticos)) #f)) (string? (cadr Diagnosticos)) (not (equal? (string->number (caddr Diagnosticos)) #f)) ))
+;Función de pertenencia para Tratamientos
+(define (isTratamiento? Tratamientos) (and (list? Tratamientos) (= (length Tratamientos) 4) (not (equal? (string->number (car Tratamientos)) #f)) (string? (cadr Tratamientos)) (string? (caddr Tratamientos)) (string? (cadddr Tratamientos))))
+;Función de pertenencia para DiagnosticosPacientes
+(define (isDiagnosticoPaciente? DiagnosticosPacientes) (and (list? DiagnosticosPacientes) (= (length DiagnosticosPacientes) 9) (not (equal? (string->number (car DiagnosticosPacientes)) #f)) (not (equal? (string->number (cadr DiagnosticosPacientes)) #f)) (not (equal? (string->number (caddr DiagnosticosPacientes)) #f)) (string? (cadddr DiagnosticosPacientes)) (not (equal? (string->number (cadddr (cdr DiagnosticosPacientes))) #f)) (string? (cadddr (cddr DiagnosticosPacientes))) (string? (cadddr (cdddr DiagnosticosPacientes))) (not (equal? (string->number (cadddr (cdddr (cdr DiagnosticosPacientes)))) #f)) (string? (cadddr (cdddr (cddr DiagnosticosPacientes))))))
+;Función de pertenencia para TratamientosDiagnosticos
+(define (isTratamientoDiagnostico? TratamientosDiagnosticos) (and (list? TratamientosDiagnosticos) (= (length TratamientosDiagnosticos) 2) (not (equal? (string->number (car TratamientosDiagnosticos)) #f)) (not (equal? (string->number (cadr TratamientosDiagnosticos)) #f)) ))
+;Función de pertenencia para TratamientosDiagnosticosPac
+(define (isTratamientoDiagnosticoPaciente? TratamientosDiagnosticosPac) (and (list? TratamientosDiagnosticosPac) (= (length TratamientosDiagnosticosPac) 6) (not (equal? (string->number (car TratamientosDiagnosticosPac)) #f)) (not (equal? (string->number (cadr TratamientosDiagnosticosPac)) #f)) (not (equal? (string->number (caddr TratamientosDiagnosticosPac)) #f)) (string? (cadddr TratamientosDiagnosticosPac)) (not (equal? (string->number (cadddr (cdr TratamientosDiagnosticosPac))) #f)) (string? (cadddr (cddr TratamientosDiagnosticosPac))) ))
 
-;Carga de funciones contructores desde archivo contructores.rkt
-(provide createDoctor)
-(provide createPaciente)
-(provide createDiagnostico)
-(provide createTratamiento)
-(provide createDiagnosticoPaciente)
-(provide createTratamientoDiagnostico)
-(provide createTratamientoDiagnosticoPaciente)
+;Selectores para el TDA Paciente
+(define (obtenerIDPaciente Pacientes) (if (isPaciente? Pacientes) (car Pacientes) #f))
+(define (obtenerRunPaciente Pacientes) (if (isPaciente? Pacientes) (cadr Pacientes) #f))
+(define (obtenerEmailPaciente Pacientes) (if (isPaciente? Pacientes) (caddr Pacientes) #f))
+(define (obtenNombrePaciente Pacientes) (if (isPaciente? Pacientes) (cadddr Pacientes) #f))
+(define (obtenerApellidoPaciente Pacientes) (if (isPaciente? Pacientes) (cadddr (cdr Pacientes)) #f))
+(define (obtenerFechaNacimientoPaciente Pacientes) (if (isPaciente? Pacientes) (cadddr (cddr Pacientes)) #f ))
 
-;Carga funciones modificadores desde archivo modificadores.rkt
-(provide modificaIDPaciente)
-(provide modificaRunPaciente)
-(provide modificaEmailPaciente)
-(provide modificaNombrePaciente)
-(provide modificaApellidoPaciente)
-(provide modificaFechaNacimientoPaciente)
-(provide modificaIDDoctor)
-(provide modificaEmailDoctor)
-(provide modificaNombreDoctor)
-(provide modificaApellidoDoctor)
-(provide modificaEspecialidadDoctor)
-(provide modificaIDDiagnostico)
-(provide modificaDescripcionDiagnostico)
-(provide modificaNivelGravedadDiagnostico)
-(provide modificaIDTratamiento)
-(provide modificaNombreTratamiento)
-(provide modificadescripcionTratamiento)
-(provide modificaNivelRiesgoTratamiento)
-(provide modificaIDDiagnosticoPaciente)
-(provide modificaIdPacienteDiagnosticoPaciente)
-(provide modificaIdDiagnosticoDiagnosticoPaciente)
-(provide modificaFechaDiagnosticoDiagnosticoPaciente)
-(provide modificaIdDoctorDiagnosticoPaciente)
-(provide modificaEstadoDiagnosticoDiagnosticoPaciente)
-(provide modificaFechaAltaDiagnosticoPaciente)
-(provide modificaIdDoctorAltaDiagnosticoDiagnosticoPaciente)
-(provide modificaDetalleAltaDiagnosticoPaciente)
-(provide modificaIdDiagnosticoTratamientoDiagnostico)
-(provide modificaIdTratamientoTratamientoDiagnostico)
-(provide modificaIDTratamientoDiagnosticoPaciente)
-(provide modificaIDTratamientoTratamietoDiagnosticoPaciente)
-(provide modificaIdDoctorTratamientoDiagnosticoPaciente)
-(provide modificaFechaInicioTratamientoDiagnosticoPaciente)
-(provide modificaDuracionDiasTratamientoDiagnosticoPaciente)
-(provide modificaResultadoTratamientoDiagnosticoPaciente)
+;Selectores para el TDA Doctor
+(define (obtenerIDDoctor Doctores) (if (isDoctor? Doctores) (car Doctores) #f))
+(define (obtenerRunDoctor Doctores) (if (isDoctor? Doctores) (cadr Doctores) #f))
+(define (obtenerEmailDoctor Doctores) (if (isDoctor? Doctores) (caddr Doctores) #f))
+(define (obtenerNombreDoctor Doctores) (if (isDoctor? Doctores) (cadddr Doctores) #f))
+(define (obtenerApellidoDoctor Doctores) (if (isDoctor? Doctores) (cadddr (cdr Doctores)) #f))
+(define (obtenerEspecialidadDoctor Doctores) (if (isDoctor? Doctores) (cadddr (cddr Doctores)) #f))
 
-;Carga de funciones de seleccion desde selectores.rkt
-(provide obtenerIDPaciente)
-(provide obtenerRunPaciente)
-(provide obtenerEmailPaciente)
-(provide obtenerNombrePaciente)
-(provide obtenerApellidoPaciente)
-(provide obtenerFechaNacimientoPaciente)
-(provide obtenerIDDoctor)
-(provide obtenerRunDoctor)
-(provide obtenerEmailDoctor)
-(provide obtenerNombreDoctor)
-(provide obtenerApellidoDoctor)
-(provide obtenerEspecialidadDoctor)
-(provide obtenerIDDiagnostico)
-(provide obtenerDescripcionDiagnostico)
-(provide obtenerNivelGravedadDiagnostico)
-(provide obtenerIDTratamiento)
-(provide obtenerNombreTratamiento)
-(provide obtenerDescripcionTratamiento)
-(provide obtenerNivelRiesgoTratamiento)
-(provide obtenerIDDiagnosticoPaciente)
-(provide obtenerIdPacienteDiagnosticoPaciente)
-(provide obtenerIdDiagnosticoDiagnosticoPaciente)
-(provide obtenerFechaDiagnosticoDiagnosticoPaciente)
-(provide obtenerIdDoctorDiagnosticoDiagnosticoPaciente)
-(provide obtenerEstadoDiagnosticoDiagnosticoPaciente)
-(provide obtenerFechaAltaDiagnosticoPaciente)
-(provide obtenerIdDoctorAltaDiagnosticoPaciente)
-(provide obtenerDetalleAltaDiagnosticoPaciente)
-(provide obtenerIdDiagnosticoTratamientoDiagnostico)
-(provide obtenerIdTratamientoTratamientoDiagnostico)
-(provide obtenerIdDiagnosticoTratamientoDiagnosticoPaciente)
-(provide obtenerIdTratamientoTratamientoDiagnosticoPaciente)
-(provide obtenerIdDoctorTratamientoDiagnosticoPaciente)
-(provide obtenerFechaInicioTratamientoDiagnosticoPaciente)
-(provide obtenerDuracionDiasTratamientoDiagnosticoPaciente)
-(provide obtenerResultadoTratamientoDiagnosticoPaciente)
+;Selectores para el TDA Diagnostico
+(define (obtenerIDDiagnostico Diagnosticos) (if (isDiagnostico? Diagnosticos) (car Diagnosticos) #f))
+(define (obtenerDescripcionDiagnostico Diagnosticos) (if (isDiagnostico? Diagnosticos) (cadr Diagnosticos) #f))
+(define (obtenerNivelGravedadDiagnostico Diagnosticos) (if (isDiagnostico? Diagnosticos) (caddr Diagnosticos) #f))
+
+;Selectores para el TDA Tratamiento
+(define (obtenerIDTratamiento Tratamientos) (if (isTratamiento? Tratamientos) (car Tratamientos) #f))
+(define (obtenerNombreTratamiento Tratamientos) (if (isTratamiento? Tratamientos) (cadr Tratamientos) #f))
+(define (obtenerDescripcionTratamiento Tratamientos) (if (isTratamiento? Tratamientos) (caddr Tratamientos) #f))
+(define (obtenerNivelRiesgoTratamiento Tratamientos) (if (isTratamiento? Tratamientos) (cadddr Tratamientos) #f))
+
+;Selectores para los datos relacionados de Pacientes&Diagnostico
+(define (obtenerIDDiagnosticoPaciente DiagnosticosPacientes) (if (isDiagnosticoPaciente? DiagnosticosPacientes) (car DiagnosticosPacientes) #f))
+(define (obtenerIdPacienteDiagnosticoPaciente DiagnosticosPacientes) (if (isDiagnosticoPaciente? DiagnosticosPacientes) (cadr DiagnosticosPacientes) #f))
+(define (obtenerIdDiagnosticoDiagnosticoPaciente DiagnosticosPacientes) (if (isDiagnosticoPaciente? DiagnosticosPacientes) (caddr DiagnosticosPacientes) #f))
+(define (obtenerFechaDiagnosticoDiagnosticoPaciente DiagnosticosPacientes) (if (isDiagnosticoPaciente? DiagnosticosPacientes) (cadddr DiagnosticosPacientes) #f))
+(define (obtenerIdDoctorDiagnosticoDiagnosticoPaciente DiagnosticosPacientes) (if (isDiagnosticoPaciente? DiagnosticosPacientes) (cadddr (cdr DiagnosticosPacientes)) #f))
+(define (obtenerEstadoDiagnosticoDiagnosticoPaciente DiagnosticosPacientes) (if (isDiagnosticoPaciente? DiagnosticosPacientes) (cadddr (cddr DiagnosticosPacientes)) #f))
+(define (obtenerFechaAltaDiagnosticoPaciente DiagnosticosPacientes) (if (isDiagnosticoPaciente? DiagnosticosPacientes) (cadddr (cdddr DiagnosticosPacientes)) #f))
+(define (obtenerIdDoctorAltaDiagnosticoPaciente DiagnosticosPacientes) (if (isDiagnosticoPaciente? DiagnosticosPacientes) (cadddr (cdddr (cdr DiagnosticosPacientes))) #f))
+(define (obtenerDetalleAltaDiagnosticoPaciente DiagnosticosPacientes) (if (isDiagnosticoPaciente? DiagnosticosPacientes) (cadddr (cdddr (cddr DiagnosticosPacientes))) #f))
+
+;Selectores para los datos relacionados de Tratamientos&Diagnostico
+(define (obtenerIdDiagnosticoTratamientoDiagnostico TratamientosDiagnosticos) (if (isTratamientoDiagnostico? TratamientosDiagnosticos) (car TratamientosDiagnosticos) #f))
+(define (obtenerIdTratamientoTratamientoDiagnostico TratamientosDiagnosticos) (if (isTratamientoDiagnostico? TratamientosDiagnosticos) (cadr TratamientosDiagnosticos) #f))
+
+;Selectores para los datos relacionados de Tratamientos&Diagnostico&Paciente
+(define (obtenerIdDiagnosticoTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac) (if (isTratamientoDiagnosticoPaciente? TratamientosDiagnosticosPac) (car TratamientosDiagnosticosPac) #f))
+(define (obtenerIdTratamientoTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac) (if (isTratamientoDiagnosticoPaciente? TratamientosDiagnosticosPac) (cadr TratamientosDiagnosticosPac) #f))
+(define (obtenerIdDoctorTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac) (if (isTratamientoDiagnosticoPaciente? TratamientosDiagnosticosPac) (caddr TratamientosDiagnosticosPac) #f))
+(define (obtenerFechaInicioTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac) (if (isTratamientoDiagnosticoPaciente? TratamientosDiagnosticosPac) (cadddr TratamientosDiagnosticosPac) #f))
+(define (obtenerDuracionDiasTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac) (if (isTratamientoDiagnosticoPaciente? TratamientosDiagnosticosPac) (cadddr (cdr TratamientosDiagnosticosPac)) #f))
+(define (obtenerResultadoTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac) (if (isTratamientoDiagnosticoPaciente? TratamientosDiagnosticosPac) (cadddr (cddr TratamientosDiagnosticosPac)) #f))
+
+;Modificadores creados para pacientes.
+(define (modificaIDPaciente Pacientes Id) (createPaciente Id (obtenerRunPaciente Pacientes) (obtenerEmailPaciente Pacientes) (obtenNombrePaciente Pacientes) (obtenerApellidoPaciente Pacientes) (obtenerFechaNacimientoPaciente Pacientes)))
+(define (modificaRunPaciente Pacientes run) (createPaciente (obtenerIDPaciente Pacientes) run (obtenerEmailPaciente Pacientes) (obtenNombrePaciente Pacientes) (obtenerApellidoPaciente Pacientes) (obtenerFechaNacimientoPaciente Pacientes)))
+(define (modificaEmailPaciente Pacientes email) (createPaciente (obtenerIDPaciente Pacientes) (obtenerRunPaciente Pacientes) email (obtenNombrePaciente Pacientes) (obtenerApellidoPaciente Pacientes) (obtenerFechaNacimientoPaciente Pacientes)))
+(define (modificaNombrePaciente Pacientes nombre) (createPaciente (obtenerIDPaciente Pacientes) (obtenerRunPaciente Pacientes) (obtenerRunPaciente Pacientes) nombre (obtenerApellidoPaciente Pacientes) (obtenerFechaNacimientoPaciente Pacientes)))
+(define (modificaApellidoPaciente Pacientes apellido) (createPaciente (obtenerIDPaciente Pacientes) (obtenerRunPaciente Pacientes) (obtenerRunPaciente Pacientes) (obtenNombrePaciente Pacientes) apellido (obtenerFechaNacimientoPaciente Pacientes)))
+(define (modificaFechaNacimientoPaciente Pacientes fechaNac) (createPaciente (obtenerIDPaciente Pacientes) (obtenerRunPaciente Pacientes) (obtenerRunPaciente Pacientes) (obtenNombrePaciente Pacientes) (obtenerApellidoPaciente Pacientes) fechaNac))
+
+;Modificadores creados para doctores.
+(define (modificaIDDoctor Doctores Id) (createDoctor Id (obtenerRunDoctor Doctores) (obtenerEmailDoctor Doctores) (obtenerNombreDoctor Doctores) (obtenerApellidoDoctor Doctores) (obtenerEspecialidadDoctor Doctores)))
+(define (modificaRutDoctor Doctores run) (createDoctor (obtenerIDDoctor Doctores) run (obtenerEmailDoctor Doctores) (obtenerNombreDoctor Doctores) (obtenerApellidoDoctor Doctores) (obtenerEspecialidadDoctor Doctores)))
+(define (modificaEmailDoctor Doctores email) (createDoctor (obtenerIDDoctor Doctores) (obtenerRunDoctor Doctores) email (obtenerNombreDoctor Doctores) (obtenerApellidoDoctor Doctores) (obtenerEspecialidadDoctor Doctores)))
+(define (modificaNombreDoctor Doctores nombre) (createDoctor (obtenerIDDoctor Doctores) (obtenerRunDoctor Doctores) (obtenerEmailDoctor Doctores) nombre (obtenerApellidoDoctor Doctores) (obtenerEspecialidadDoctor Doctores)))
+(define (modificaApellidoDoctor Doctores apellido) (createDoctor (obtenerIDDoctor Doctores) (obtenerRunDoctor Doctores) (obtenerEmailDoctor Doctores) (obtenerNombreDoctor Doctores) apellido (obtenerEspecialidadDoctor Doctores)))
+(define (modificaEspecialidadDoctor Doctores especialidad) (createDoctor (obtenerIDDoctor Doctores) (obtenerRunDoctor Doctores) (obtenerEmailDoctor Doctores) (obtenerNombreDoctor Doctores) (obtenerApellidoDoctor Doctores) especialidad))
+
+;Modificadores creados para diagnosticos.
+(define (modificaIDDiagnostico Diagnosticos Id) (createDiagnostico Id (obtenerDescripcionDiagnostico Diagnosticos) (obtenerNivelGravedadDiagnostico Diagnosticos)))
+(define (modificaDescripcionDiagnostico Diagnosticos descripcionDiagnostico) (createDiagnostico (obtenerIDDiagnostico Diagnosticos) descripcionDiagnostico (obtenerNivelGravedadDiagnostico Diagnosticos)))
+(define (modificaNivelGravedadDiagnostico Diagnosticos nivelGravedad) (createDiagnostico (obtenerIDDiagnostico Diagnosticos) (obtenerDescripcionDiagnostico Diagnosticos) nivelGravedad))
+
+;Modificadores creados para tratamientos.
+(define (modificaIDTratamiento Tratamientos Id) (createTratamiento Id (obtenerNombreTratamiento Tratamientos) (obtenerDescripcionTratamiento Tratamientos) (obtenerNivelRiesgoTratamiento Tratamientos)))
+(define (modificaNombreTratamiento Tratamientos nombre) (createTratamiento (obtenerIDTratamiento Tratamientos) nombre (obtenerDescripcionTratamiento Tratamientos) (obtenerNivelRiesgoTratamiento Tratamientos)))
+(define (modificadescripcionTratamiento Tratamientos descripcion) (createTratamiento (obtenerIDTratamiento Tratamientos) (obtenerNombreTratamiento Tratamientos) descripcion (obtenerNivelRiesgoTratamiento Tratamientos)))
+(define (modificaNivelRiesgoTratamiento Tratamientos nivelRiesgo) (createTratamiento (obtenerIDTratamiento Tratamientos) (obtenerNombreTratamiento Tratamientos) (obtenerDescripcionTratamiento Tratamientos) nivelRiesgo))
+
+;Modificadores creados para la relacion diagnosticosPacientes.
+(define (modificaIDDiagnosticoPaciente DiagnosticosPacientes Id) (createDiagnosticoPaciente Id (obtenerIdPacienteDiagnosticoPaciente DiagnosticosPacientes) (obtenerIdDiagnosticoDiagnosticoPaciente DiagnosticosPacientes) (obtenerFechaDiagnosticoDiagnosticoPaciente DiagnosticosPacientes) (obtenerIdDoctorDiagnosticoDiagnosticoPaciente DiagnosticosPacientes) (obtenerEstadoDiagnosticoDiagnosticoPaciente DiagnosticosPacientes) (obtenerFechaAltaDiagnosticoPaciente DiagnosticosPacientes) (obtenerIdDoctorAltaDiagnosticoPaciente DiagnosticosPacientes) (obtenerDetalleAltaDiagnosticoPaciente DiagnosticosPacientes)))
+(define (modificaIdPacienteDiagnosticoPaciente DiagnosticosPacientes IdPaciente) (createDiagnosticoPaciente (obtenerIDDiagnosticoPaciente DiagnosticosPacientes) IdPaciente (obtenerIdDiagnosticoDiagnosticoPaciente DiagnosticosPacientes) (obtenerFechaDiagnosticoDiagnosticoPaciente DiagnosticosPacientes) (obtenerIdDoctorDiagnosticoDiagnosticoPaciente DiagnosticosPacientes) (obtenerEstadoDiagnosticoDiagnosticoPaciente DiagnosticosPacientes) (obtenerFechaAltaDiagnosticoPaciente DiagnosticosPacientes) (obtenerIdDoctorAltaDiagnosticoPaciente DiagnosticosPacientes) (obtenerDetalleAltaDiagnosticoPaciente DiagnosticosPacientes)))
+(define (modificaIdDiagnosticoDiagnosticoPaciente DiagnosticosPacientes IdDiagnostico) (createDiagnosticoPaciente (obtenerIDDiagnosticoPaciente DiagnosticosPacientes) (obtenerIdPacienteDiagnosticoPaciente DiagnosticosPacientes) IdDiagnostico (obtenerFechaDiagnosticoDiagnosticoPaciente DiagnosticosPacientes) (obtenerIdDoctorDiagnosticoDiagnosticoPaciente DiagnosticosPacientes) (obtenerEstadoDiagnosticoDiagnosticoPaciente DiagnosticosPacientes) (obtenerFechaAltaDiagnosticoPaciente DiagnosticosPacientes) (obtenerIdDoctorAltaDiagnosticoPaciente DiagnosticosPacientes) (obtenerDetalleAltaDiagnosticoPaciente DiagnosticosPacientes)))
+
+(define (modificaFechaDiagnosticoDiagnosticoPaciente DiagnosticosPacientes FechaDiagnostico) (createDiagnosticoPaciente (obtenerIDDiagnosticoPaciente DiagnosticosPacientes (obtenerIdPacienteDiagnosticoPaciente DiagnosticosPacientes) (obtenerIdDiagnosticoDiagnosticoPaciente DiagnosticosPacientes) FechaDiagnostico (obtenerIdDoctorDiagnosticoDiagnosticoPaciente DiagnosticosPacientes) (obtenerEstadoDiagnosticoDiagnosticoPaciente DiagnosticosPacientes) (obtenerFechaAltaDiagnosticoPaciente DiagnosticosPacientes) (obtenerIdDoctorAltaDiagnosticoPaciente DiagnosticosPacientes) (obtenerDetalleAltaDiagnosticoPaciente DiagnosticosPacientes)))
+(define (modificaIdDoctorDiagnosticoPaciente DiagnosticosPacientes IdDoctor) (createDiagnosticoPaciente (obtenerIDDiagnosticoPaciente DiagnosticosPacientes) (obtenerIdPacienteDiagnosticoPaciente DiagnosticosPacientes) (obtenerIdDiagnosticoDiagnosticoPaciente DiagnosticosPacientes) (obtenerFechaDiagnosticoDiagnosticoPaciente DiagnosticosPacientes) IdDoctor (obtenerEstadoDiagnosticoDiagnosticoPaciente DiagnosticosPacientes) (obtenerFechaAltaDiagnosticoPaciente DiagnosticosPacientes) (obtenerIdDoctorAltaDiagnosticoPaciente DiagnosticosPacientes) (obtenerDetalleAltaDiagnosticoPaciente DiagnosticosPacientes)))
+(define (modificaEstadoDiagnosticoDiagnosticoPaciente DiagnosticosPacientes EstadoDiagnostico) (createDiagnosticoPaciente (obtenerIDDiagnosticoPaciente DiagnosticosPacientes) (obtenerIdPacienteDiagnosticoPaciente DiagnosticosPacientes) (obtenerIdDiagnosticoDiagnosticoPaciente DiagnosticosPacientes)(obtenerFechaDiagnosticoDiagnosticoPaciente DiagnosticosPacientes) (obtenerIdDoctorDiagnosticoDiagnosticoPaciente DiagnosticosPacientes) EstadoDiagnostico (obtenerFechaAltaDiagnosticoPaciente DiagnosticosPacientes) (obtenerIdDoctorAltaDiagnosticoPaciente DiagnosticosPacientes) (obtenerDetalleAltaDiagnosticoPaciente DiagnosticosPacientes)))
+(define (modificaFechaAltaDiagnosticoPaciente DiagnosticosPacientes FechaAlta) (createDiagnosticoPaciente (obtenerIDDiagnosticoPaciente DiagnosticosPacientes) (obtenerIdPacienteDiagnosticoPaciente DiagnosticosPacientes) (obtenerIdDiagnosticoDiagnosticoPaciente DiagnosticosPacientes) (obtenerFechaDiagnosticoDiagnosticoPaciente DiagnosticosPacientes) (obtenerIdDoctorDiagnosticoDiagnosticoPaciente DiagnosticosPacientes) (obtenerEstadoDiagnosticoDiagnosticoPaciente DiagnosticosPacientes) FechaAlta (obtenerIdDoctorAltaDiagnosticoPaciente DiagnosticosPacientes) (obtenerDetalleAltaDiagnosticoPaciente DiagnosticosPacientes)))
+(define (modificaIdDoctorAltaDiagnosticoDiagnosticoPaciente DiagnosticosPacientes IdDoctorAlta) (createDiagnosticoPaciente (obtenerIDDiagnosticoPaciente DiagnosticosPacientes) (obtenerIdPacienteDiagnosticoPaciente DiagnosticosPacientes) (obtenerIdDiagnosticoDiagnosticoPaciente DiagnosticosPacientes) (obtenerFechaDiagnosticoDiagnosticoPaciente DiagnosticosPacientes) (obtenerIdDoctorDiagnosticoDiagnosticoPaciente DiagnosticosPacientes) (obtenerEstadoDiagnosticoDiagnosticoPaciente DiagnosticosPacientes) (obtenerFechaAltaDiagnosticoPaciente DiagnosticosPacientes) IdDoctorAlta (obtenerDetalleAltaDiagnosticoPaciente DiagnosticosPacientes)))
+(define (modificaDetalleAltaDiagnosticoPaciente DiagnosticosPacientes DetalleAlta) (createDiagnosticoPaciente (obtenerIDDiagnosticoPaciente DiagnosticosPacientes) (obtenerIdPacienteDiagnosticoPaciente DiagnosticosPacientes) (obtenerIdDiagnosticoDiagnosticoPaciente DiagnosticosPacientes) (obtenerFechaDiagnosticoDiagnosticoPaciente DiagnosticosPacientes) (obtenerIdDoctorDiagnosticoDiagnosticoPaciente DiagnosticosPacientes) (obtenerEstadoDiagnosticoDiagnosticoPaciente DiagnosticosPacientes) (obtenerFechaAltaDiagnosticoPaciente DiagnosticosPacientes) (obtenerIdDoctorAltaDiagnosticoPaciente DiagnosticosPacientes) DetalleAlta))
+
+;Modificadores creados para la relacion TratamientosDiagnosticos.
+(define (modificaIdDiagnosticoTratamientoDiagnostico TratamientosDiagnosticos idDiagnostico) (createTratamientoDiagnostico idDiagnostico (obtenerIdTratamientoTratamientoDiagnostico TratamientosDiagnosticos)))
+(define (modificaIdTratamientoTratamientoDiagnostico TratamientosDiagnosticos idTratamiento) (createTratamientoDiagnostico (obtenerIdDiagnosticoTratamientoDiagnostico TratamientosDiagnosticos) idTratamiento))
+
+;Modificadores creados para la relacion TratamientosDiagnosticosPacientes.
+(define (modificaIDTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac Id) (createTratamientoDiagnosticoPaciente Id (obtenerIdTratamientoTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac) (obtenerIdDoctorTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac) (obtenerFechaInicioTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac) (obtenerDuracionDiasTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac) (obtenerResultadoTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac)))
+(define (modificaIDTratamientoTratamietoDiagnosticoPaciente TratamientosDiagnosticosPac IdTratamiento) (createTratamientoDiagnosticoPaciente (obtenerIdDiagnosticoTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac) IdTratamiento (obtenerIdDoctorTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac) (obtenerFechaInicioTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac) (obtenerDuracionDiasTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac) (obtenerResultadoTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac)))
+(define (modificaIdDoctorTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac IdDoctor) (createTratamientoDiagnosticoPaciente (obtenerIdDiagnosticoTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac) (obtenerIdTratamientoTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac) IdDoctor (obtenerFechaInicioTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac) (obtenerDuracionDiasTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac) (obtenerResultadoTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac)))
+(define (modificaFechaInicioTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac FechaInicio) (createTratamientoDiagnosticoPaciente (obtenerIdDiagnosticoTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac) (obtenerIdTratamientoTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac) (obtenerIdDoctorTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac) FechaInicio (obtenerDuracionDiasTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac) (obtenerResultadoTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac)))
+(define (modificaDuracionDiasTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac DuracionDias) (createTratamientoDiagnosticoPaciente (obtenerIdDiagnosticoTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac) (obtenerIdTratamientoTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac) (obtenerIdDoctorTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac) (obtenerFechaInicioTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac) DuracionDias (obtenerResultadoTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac)))
+(define (modificaResultadoTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac Resultado) (createTratamientoDiagnosticoPaciente (obtenerIdDiagnosticoTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac) (obtenerIdTratamientoTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac) (obtenerIdDoctorTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac) (obtenerFechaInicioTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac) (obtenerDuracionDiasTratamientoDiagnosticoPaciente TratamientosDiagnosticosPac) Resultado))
+
 
 ;                                                                 FUNCIONES DE SELECCIÓN BASICAS
 ;=========================================================================================================================================================================
 ;Función que obtiene el nombre de un paciente a partir de su run.
 (define (obtenerNombrePaciente run) (define obtenerPaciente(lambda (run Pacientes)(if (null? Pacientes) #f (if (equal? (obtenerRunPaciente(car Pacientes)) run) #t (obtenerPaciente run (cdr Pacientes)))))) (if (list? Pacientes) (obtenerPaciente run Pacientes) #f ))
-
 ;Función que obtiene la especialidad de un medico a partir de su run.
 (define (especialidad run) (define obtenerDoctor(lambda (run Doctores)(if (null? Doctores) (void) (if (equal? (obtenerRunDoctor(car Doctores)) run) (obtenerEspecialidadDoctor(car Doctores)) (obtenerDoctor run (cdr Doctores)))))) (if (list? Pacientes) (obtenerDoctor run Doctores) (void)))
-
 ;Función que indica los tratamientos que cumplen con un cierto nivel de riesgo especificado.
 (define (tratamientoRiesgoso nivelRiesgo) (define obtenerTratamiento(lambda (nivelRiesgo Tratamientos) (if (null? Tratamientos) (void) (if (equal? (obtenerNivelRiesgoTratamiento(car Tratamientos)) nivelRiesgo) (begin (display (obtenerNombreTratamiento(car Tratamientos)))(newline) (obtenerTratamiento nivelRiesgo (cdr Tratamientos))) (obtenerTratamiento nivelRiesgo (cdr Tratamientos)))))) (if (list? Tratamientos) (obtenerTratamiento nivelRiesgo Tratamientos) (void)))
-
 ;Función que obtiene la cantidad de medicos que han brindado un determinado tratamiento
 (define (cantidadMedicosTratamiento idTratamiento) (define comprobarDiferencia(lambda (medicos idPaciente) (if (null? medicos) #t (if (equal? (car medicos) idPaciente) #f (comprobarDiferencia (cdr medicos) idPaciente))))) (define obtenerCantidad(lambda (idTratamiento TratamientosDiagnosticosPac medicos) (if (null? TratamientosDiagnosticosPac) (display (length medicos)) (cond [(and (equal? (obtenerIdTratamientoTratamientoDiagnosticoPaciente(car TratamientosDiagnosticosPac)) (number->string idTratamiento)) (comprobarDiferencia medicos (obtenerIdDoctorTratamientoDiagnosticoPaciente (car TratamientosDiagnosticosPac)))) (obtenerCantidad idTratamiento (cdr TratamientosDiagnosticosPac) (cons  (obtenerIdDoctorTratamientoDiagnosticoPaciente (car TratamientosDiagnosticosPac) )  medicos))] (else (obtenerCantidad idTratamiento (cdr TratamientosDiagnosticosPac) medicos)))))) (if (list? TratamientosDiagnosticosPac) (obtenerCantidad idTratamiento TratamientosDiagnosticosPac empty) (void)))
-
 ;Función que obtiene la cantidad de paciente que posee un medico.
 (define (cantidadPacientesMedico  idDoctor) (define comprobarDiferencia(lambda (pacientes idPaciente) (if (null? pacientes) #t (if (equal? (car pacientes) idPaciente) #f (comprobarDiferencia (cdr pacientes) idPaciente)))))(define obtenerCantidad(lambda  (idDoctor DiagnosticosPacientes pacientes) (if (null? DiagnosticosPacientes) (display (length pacientes)) (cond [(and (or (equal? (obtenerIdDoctorDiagnosticoDiagnosticoPaciente(car DiagnosticosPacientes)) (number->string idDoctor)) (equal? (obtenerIdDoctorAltaDiagnosticoPaciente(car DiagnosticosPacientes)) (number->string idDoctor))) (comprobarDiferencia pacientes (obtenerIdPacienteDiagnosticoPaciente (car DiagnosticosPacientes)))) (obtenerCantidad idDoctor (cdr DiagnosticosPacientes) (cons  (obtenerIdPacienteDiagnosticoPaciente (car DiagnosticosPacientes) )  pacientes))] (else (obtenerCantidad idDoctor (cdr DiagnosticosPacientes) pacientes)))))) (if (list? DiagnosticosPacientes) (obtenerCantidad idDoctor DiagnosticosPacientes empty) (void)))
 
 ;                                                                 FUNCIONES DE SELECCIÓN DE NIVEL MEDIO
 ;=========================================================================================================================================================================
 ;Función que obtiene el tratamiento más usado por un diagnostico indicado.
-(define (tratamientoMasUsadoPorDiagnostico  idDiagnostico) (define contarYagregar(lambda (cantidad idTratamiento idDiagnostico TratamientosDiagnosticos cont) (if (null? TratamientosDiagnosticos)(cons (list idTratamiento cont) cantidad) (if (and (equal? (obtenerIdTratamientoTratamientoDiagnostico (car TratamientosDiagnosticos)) idTratamiento) (equal? (obtenerIdDiagnosticoTratamientoDiagnostico (car TratamientosDiagnosticos)) idDiagnostico)) (contarYagregar cantidad idTratamiento idDiagnostico (cdr TratamientosDiagnosticos) (+ cont 1)) (contarYagregar cantidad idTratamiento idDiagnostico (cdr TratamientosDiagnosticos) cont))))) (define comprobarDiferencia(lambda (cantidad idTratamiento) (if (null? cantidad) #t (if (equal? (list-ref (car cantidad) 0) idTratamiento) #f (comprobarDiferencia (cdr cantidad) idTratamiento))))) (define mayor(lambda (cantidad valor) (if (null? cantidad) valor (if (> (list-ref (car cantidad) 1) valor) (mayor (cdr cantidad) (list-ref (car cantidad) 1)) (mayor (cdr cantidad) valor))))) (define nombreTratamiento(lambda (cantidad tratamiento mayor) (if (null? cantidad) null (if (and (equal? (list-ref (car cantidad) 1) mayor) (equal? (obtenerIDTratamiento tratamiento) (list-ref (car cantidad) 0))) (obtenerNombreTratamiento tratamiento) (nombreTratamiento (cdr cantidad) tratamiento mayor))))) (define Mostrar(lambda  (cantidad mayor Tratamientos) (if (null? Tratamientos) (void) (cond [(not (null? (nombreTratamiento cantidad (car Tratamientos) mayor))) (display (nombreTratamiento cantidad (car Tratamientos) mayor)) (display ",") (display (number->string mayor)) (display "\n") (Mostrar cantidad mayor (cdr Tratamientos))] (else (Mostrar cantidad mayor (cdr Tratamientos))))))) (define obtenerCantidad(lambda  (idDiagnostico TratamientosDiagnosticos cantidad) (if (null? TratamientosDiagnosticos)(Mostrar cantidad (mayor cantidad 0) Tratamientos) (cond [(and (equal? (obtenerIdDiagnosticoTratamientoDiagnostico (car TratamientosDiagnosticos)) (number->string idDiagnostico)) (comprobarDiferencia cantidad (obtenerIdTratamientoTratamientoDiagnostico (car TratamientosDiagnosticos)))) (obtenerCantidad idDiagnostico (cdr TratamientosDiagnosticos) (contarYagregar cantidad (obtenerIdTratamientoTratamientoDiagnostico (car TratamientosDiagnosticos)) (number->string idDiagnostico) TratamientosDiagnosticos 0))] (else (obtenerCantidad idDiagnostico (cdr TratamientosDiagnosticos) cantidad)))))) (if (list? TratamientosDiagnosticos) (obtenerCantidad idDiagnostico TratamientosDiagnosticos empty) (void)))
- 
+(define (tratamientoMasUsadoPorDiagnostico  idDiagnostico) (define sumAppend(lambda (cantidad idTratamiento idDiagnostico TratamientosDiagnosticos cont) (if (null? TratamientosDiagnosticos)(cons (list idTratamiento cont) cantidad) (if (and (equal? (obtenerIdTratamientoTratamientoDiagnostico (car TratamientosDiagnosticos)) idTratamiento) (equal? (obtenerIdDiagnosticoTratamientoDiagnostico (car TratamientosDiagnosticos)) idDiagnostico)) (sumAppend cantidad idTratamiento idDiagnostico (cdr TratamientosDiagnosticos) (+ cont 1)) (sumAppend cantidad idTratamiento idDiagnostico (cdr TratamientosDiagnosticos) cont))))) (define comprobarDiferencia(lambda (cantidad idTratamiento) (if (null? cantidad) #t (if (equal? (list-ref (car cantidad) 0) idTratamiento) #f (comprobarDiferencia (cdr cantidad) idTratamiento))))) (define mayor(lambda (cantidad valor) (if (null? cantidad) valor (if (> (list-ref (car cantidad) 1) valor) (mayor (cdr cantidad) (list-ref (car cantidad) 1)) (mayor (cdr cantidad) valor))))) (define nombreTratamiento(lambda (cantidad tratamiento mayor) (if (null? cantidad) null (if (and (equal? (list-ref (car cantidad) 1) mayor) (equal? (obtenerIDTratamiento tratamiento) (list-ref (car cantidad) 0))) (obtenerNombreTratamiento tratamiento) (nombreTratamiento (cdr cantidad) tratamiento mayor))))) (define Mostrar(lambda  (cantidad mayor Tratamientos) (if (null? Tratamientos) (void) (cond [(not (null? (nombreTratamiento cantidad (car Tratamientos) mayor))) (display (nombreTratamiento cantidad (car Tratamientos) mayor)) (display ",") (display (number->string mayor)) (display "\n") (Mostrar cantidad mayor (cdr Tratamientos))] (else (Mostrar cantidad mayor (cdr Tratamientos))))))) (define obtenerCantidad(lambda  (idDiagnostico TratamientosDiagnosticos cantidad) (if (null? TratamientosDiagnosticos)(Mostrar cantidad (mayor cantidad 0) Tratamientos) (cond [(and (equal? (obtenerIdDiagnosticoTratamientoDiagnostico (car TratamientosDiagnosticos)) (number->string idDiagnostico)) (comprobarDiferencia cantidad (obtenerIdTratamientoTratamientoDiagnostico (car TratamientosDiagnosticos)))) (obtenerCantidad idDiagnostico (cdr TratamientosDiagnosticos) (sumAppend cantidad (obtenerIdTratamientoTratamientoDiagnostico (car TratamientosDiagnosticos)) (number->string idDiagnostico) TratamientosDiagnosticos 0))] (else (obtenerCantidad idDiagnostico (cdr TratamientosDiagnosticos) cantidad)))))) (if (list? TratamientosDiagnosticos) (obtenerCantidad idDiagnostico TratamientosDiagnosticos empty) (void)))
 ;Función que obtiene el medico que ha dado más altas. 
-(define (medicoMasAltas) (define contarYagregar(lambda (cantidad idMedico DiagnosticosPacientes cont) (if (null? DiagnosticosPacientes) (cons (list idMedico cont) cantidad) (if (equal? (obtenerIdDoctorAltaDiagnosticoPaciente (car DiagnosticosPacientes)) idMedico) (contarYagregar cantidad idMedico (cdr DiagnosticosPacientes) (+ cont 1)) (contarYagregar cantidad idMedico (cdr DiagnosticosPacientes) cont))))) (define comprobarDiferencia(lambda (cantidad idTratamiento) (if (null? cantidad) #t (if (equal? (list-ref (car cantidad) 0) idTratamiento) #f (comprobarDiferencia (cdr cantidad) idTratamiento))))) (define mayor(lambda (cantidad valor) (if (null? cantidad) valor (if (> (list-ref (car cantidad) 1) valor) (mayor (cdr cantidad) (list-ref (car cantidad) 1)) (mayor (cdr cantidad) valor))))) (define nombreMedico(lambda (cantidad medico mayor) (if (null? cantidad) null (if (and (equal? (list-ref (car cantidad) 1) mayor) (equal? (obtenerIDDoctor medico) (list-ref (car cantidad) 0))) medico (nombreMedico (cdr cantidad) medico mayor))))) (define Mostrar(lambda  (cantidad mayor Doctores) (if (null? Doctores) (void) (cond [(not (null? (nombreMedico cantidad (car Doctores) mayor))) (display (obtenerRunDoctor (nombreMedico cantidad (car Doctores) mayor))) (display ",") (display (obtenerNombreDoctor (nombreMedico cantidad (car Doctores) mayor))) (display (obtenerApellidoDoctor (nombreMedico cantidad (car Doctores) mayor))) (display ",") (display (number->string mayor)) (display "\n") (Mostrar cantidad mayor (cdr Doctores))] (else (Mostrar cantidad mayor (cdr Doctores))))))) (define obtenerCantidad(lambda  (DiagnosticosPacientes cantidad) (if (null? DiagnosticosPacientes) (Mostrar cantidad (mayor cantidad 0) Doctores) (cond [(and (obtenerIdDoctorAltaDiagnosticoPaciente (car DiagnosticosPacientes)) (comprobarDiferencia cantidad (obtenerIdDoctorAltaDiagnosticoPaciente (car DiagnosticosPacientes)))) (obtenerCantidad (cdr DiagnosticosPacientes) (contarYagregar cantidad (obtenerIdDoctorAltaDiagnosticoPaciente (car DiagnosticosPacientes)) DiagnosticosPacientes 0))] (else (obtenerCantidad (cdr DiagnosticosPacientes) cantidad)))))) (if (list? DiagnosticosPacientes) (obtenerCantidad DiagnosticosPacientes empty) (void)))
+(define (medicoMasAltas) (define sumAppend(lambda (cantidad idMedico DiagnosticosPacientes cont) (if (null? DiagnosticosPacientes) (cons (list idMedico cont) cantidad) (if (equal? (obtenerIdDoctorAltaDiagnosticoPaciente (car DiagnosticosPacientes)) idMedico) (sumAppend cantidad idMedico (cdr DiagnosticosPacientes) (+ cont 1)) (sumAppend cantidad idMedico (cdr DiagnosticosPacientes) cont))))) (define comprobarDiferencia(lambda (cantidad idTratamiento) (if (null? cantidad) #t (if (equal? (list-ref (car cantidad) 0) idTratamiento) #f (comprobarDiferencia (cdr cantidad) idTratamiento))))) (define mayor(lambda (cantidad valor) (if (null? cantidad) valor (if (> (list-ref (car cantidad) 1) valor) (mayor (cdr cantidad) (list-ref (car cantidad) 1)) (mayor (cdr cantidad) valor))))) (define nombreMedico(lambda (cantidad medico mayor) (if (null? cantidad) null (if (and (equal? (list-ref (car cantidad) 1) mayor) (equal? (obtenerIDDoctor medico) (list-ref (car cantidad) 0))) medico (nombreMedico (cdr cantidad) medico mayor))))) (define Mostrar(lambda  (cantidad mayor Doctores) (if (null? Doctores) (void) (cond [(not (null? (nombreMedico cantidad (car Doctores) mayor))) (display (obtenerRunDoctor (nombreMedico cantidad (car Doctores) mayor))) (display ",") (display (obtenerNombreDoctor (nombreMedico cantidad (car Doctores) mayor))) (display (obtenerApellidoDoctor (nombreMedico cantidad (car Doctores) mayor))) (display ",") (display (number->string mayor)) (display "\n") (Mostrar cantidad mayor (cdr Doctores))] (else (Mostrar cantidad mayor (cdr Doctores))))))) (define obtenerCantidad(lambda  (DiagnosticosPacientes cantidad) (if (null? DiagnosticosPacientes) (Mostrar cantidad (mayor cantidad 0) Doctores) (cond [(and (obtenerIdDoctorAltaDiagnosticoPaciente (car DiagnosticosPacientes)) (comprobarDiferencia cantidad (obtenerIdDoctorAltaDiagnosticoPaciente (car DiagnosticosPacientes)))) (obtenerCantidad (cdr DiagnosticosPacientes) (sumAppend cantidad (obtenerIdDoctorAltaDiagnosticoPaciente (car DiagnosticosPacientes)) DiagnosticosPacientes 0))] (else (obtenerCantidad (cdr DiagnosticosPacientes) cantidad)))))) (if (list? DiagnosticosPacientes) (obtenerCantidad DiagnosticosPacientes empty) (void)))
 
 ;                                                                 FUNCIONES DE SELECCIÓN DE NIVEL ALTO
 ;=========================================================================================================================================================================
 ;Función que lista los medicos que han atendido a un determinado paciente
 (define (listarMedicosTratantesPaciente run) (define (ObtenIdentificadorPaciente run Pacientes) (if (null? Pacientes) null (if(equal? run (obtenerRunPaciente (car Pacientes))) (obtenerIDPaciente (car Pacientes)) (ObtenIdentificadorPaciente run (cdr Pacientes))))) (define (ObtenerIdentificadorDoctor Id DiagnosticosPacientes) (if (null? DiagnosticosPacientes) null (if(equal? Id (obtenerIdPacienteDiagnosticoPaciente (car DiagnosticosPacientes))) (cons (obtenerIdDoctorDiagnosticoDiagnosticoPaciente (car DiagnosticosPacientes)) (ObtenerIdentificadorDoctor Id (cdr DiagnosticosPacientes))) (ObtenerIdentificadorDoctor Id (cdr DiagnosticosPacientes))))) (define (ObtenerDatosNecesarios Id Doctores) (if (null? Doctores) null (if(equal? Id (obtenerIDDoctor (car Doctores))) (string-append (obtenerRunDoctor (car Doctores)) ", " (obtenerNombreDoctor (car Doctores)) ", " (obtenerApellidoDoctor (car Doctores))) (ObtenerDatosNecesarios Id (cdr Doctores))))) (define (CrearListaDeString ListaDeDoctores) (if (null? ListaDeDoctores) null (cons (ObtenerDatosNecesarios (car ListaDeDoctores) Doctores) (CrearListaDeString (cdr ListaDeDoctores))))) (CrearListaDeString (ObtenerIdentificadorDoctor (ObtenIdentificadorPaciente run Pacientes) DiagnosticosPacientes)))
-
 ;Función que lista todos los pacientes que han sido diagnosticas con el diagnostico "nombre" y fueron dados de alta por el doctor "run"
-(define (diagnosticoPacienteMedico nombre run) (define (obtenerIdDiags nombre Diagnosticos) (if (null? Diagnosticos) null (if(equal? nombre (obtenerDescripcionDiagnostico (car Diagnosticos))) (obtenerIDDiagnostico (car Diagnosticos)) (obtenerIdDiags nombre (cdr Diagnosticos))))) (define (obtenerIdDoc run Doctores) (if (null? Doctores) null (if(equal? run (obtenerRunDoctor (car Doctores))) (obtenerIDDoctor (car Doctores)) (obtenerIdDoc run (cdr Doctores))))) (define (ObtenIdentificadorPaciente Id doctorDeAlta DiagnosticosPacientes) (if(null? DiagnosticosPacientes) null (if(and (equal? Id (getIdDiagDP (car DiagnosticosPacientes))) (equal? doctorDeAlta (getDoctorAlta (car DiagnosticosPacientes)))) (cons (obtenerIdPacienteDiagnosticoPaciente (car DiagnosticosPacientes)) (ObtenIdentificadorPaciente Id doctorDeAlta (cdr DiagnosticosPacientes))) (ObtenIdentificadorPaciente Id doctorDeAlta (cdr DiagnosticosPacientes))))) (define (ObtenerDatosNecesarios Id Pacientes) (if(null? Pacientes) null (if(equal? Id (obtenerIDPaciente (car Pacientes))) (string-append (obtenerRunPaciente(car Pacientes)) ", " (obtenerNombrePaciente (car Pacientes)) ", " (obtenerApellidoPaciente (car Pacientes))) (ObtenerDatosNecesarios Id (cdr Pacientes))))) (define (CrearListaDeString listaDePacientes) (if (null? listaDePacientes) null (cons (ObtenerDatosNecesarios (car listaDePacientes) Pacientes) (CrearListaDeString (cdr listaDePacientes))))) (CrearListaDeString (ObtenIdentificadorPaciente (obtenerIdDiags nombre Diagnosticos) (obtenerIdDoc run Doctores) DiagnosticosPacientes)))
+(define (diagnosticoPacienteMedico nombre run) (define (obtenerIdDiags nombre Diagnosticos) (if (null? Diagnosticos) null (if(equal? nombre (obtenerDescripcionDiagnostico (car Diagnosticos))) (obtenerIDDiagnostico (car Diagnosticos)) (obtenerIdDiags nombre (cdr Diagnosticos))))) (define (obtenerIdDoc run Doctores) (if (null? Doctores) null (if(equal? run (obtenerRunDoctor (car Doctores))) (obtenerIDDoctor (car Doctores)) (obtenerIdDoc run (cdr Doctores))))) (define (ObtenIdentificadorPaciente Id doctorDeAlta DiagnosticosPacientes) (if(null? DiagnosticosPacientes) null (if(and (equal? Id (obtenerIdDiagnosticoDiagnosticoPaciente (car DiagnosticosPacientes))) (equal? doctorDeAlta (obtenerIdDoctorAltaDiagnosticoPaciente (car DiagnosticosPacientes)))) (cons (obtenerIdPacienteDiagnosticoPaciente (car DiagnosticosPacientes)) (ObtenIdentificadorPaciente Id doctorDeAlta (cdr DiagnosticosPacientes))) (ObtenIdentificadorPaciente Id doctorDeAlta (cdr DiagnosticosPacientes))))) (define (ObtenerDatosNecesarios Id Pacientes) (if(null? Pacientes) null (if(equal? Id (obtenerIDPaciente (car Pacientes))) (string-append (obtenerRunPaciente(car Pacientes)) ", " (obtenerNombrePaciente (car Pacientes)) ", " (obtenerApellidoPaciente (car Pacientes))) (ObtenerDatosNecesarios Id (cdr Pacientes))))) (define (CrearListaDeString listaDePacientes) (if (null? listaDePacientes) null (cons (ObtenerDatosNecesarios (car listaDePacientes) Pacientes) (CrearListaDeString (cdr listaDePacientes))))) (CrearListaDeString (ObtenIdentificadorPaciente (obtenerIdDiags nombre Diagnosticos) (obtenerIdDoc run Doctores) DiagnosticosPacientes)))
   

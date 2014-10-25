@@ -119,35 +119,76 @@ El presente documento resume el trabajo realizado en el desarrollo del software 
 %Nueva sección
 \section{DESCRIPCIÓN DE LA SOLUCIÓN}
 	\subsection{Propósito de la solución}
-	El proposito de nuestra solución, es generar un software de gestión que cumpla los estándares especificados por la gente de FastClinic y que sea capaz de entregar satisfacción al usuario, optimizando el tiempo invertido en los procesos productivos de dicha entidad.
+	El objetivo principal es generar un software de gestión que cumpla los estándares especificados por la gente de FastClinic y que sea capaz de entregar satisfacción al usuario, optimizando el tiempo invertido en los procesos productivos de dicha entidad.
 	
-	%\subsection{Características de la solución}
+	\subsection{Características de la solución}
+	El software generado estará codificado en lenguaje Scheme, bajo las reglas de la programación funcional. Se debe destacar que dicho paradigma de programación utliza el tipo de dato abstracto Lista y operaciones recursivas como sus piedras angulares de implementación y procesamiento.\\
+   
+   Un tipo de dato abstracto, es una implementación de codigo que permite emular el comportamiento que tiene un "entidad" o "ser" a nivel real. En otras palabras, permite generar una versión programada de los atributos y las acciones que desempeña un determinado individuo. Para este caso, se han implementado los siguientes tipos de datos abstractos:
+    \begin{enumerate}
+	\item TDA Doctor
+	\item TDA Paciente
+	\item TDA Tratamiento
+	\item TDA Diagnostico
+	\item TDA DiagnosticoPaciente
+	\item TDA TratamientoDiagnostico
+	\item TDA TratamientosDiagnosticosPaciente
+	\end{enumerate}
+
+	\subsection{Desafios de la solución}
+	El principal problema o desafio, para el estudiante de ingeniería informática, es poder interiorizar de buena forma los conceptos y la lógica de la programación funcional demostrando, dicho aprendizaje de contenidos, de forma practica a través de la creación del software solicitado.
 	
 	\subsection{Funcionalidades implementadas}
-	A continuación se detallan cada una de las funcionalidades trabajadas, escribiendo el detalle de cada funcionalidad en el formato de documentación de Doxygen.
+	A continuación se detallan cada una de las funcionalidades trabajadas. Se debe destacar que el total de funcionalidades implementadas son 9, distribuyendose de la siguiente forma:
+	\begin{itemize}
+	\item 5 Funcionalidades de nivel bajo.
+	\begin{enumerate}
+	\item obtenerNombrePaciente
+	\item especialidad
+	\item tratamientoRiesgoso
+	\item cantidadMedicosTratamiento
+	\item cantidadPacientesMedico
+	\end{enumerate}
+	\item 2 Funcionalidades de nivel medio.
+	\begin{enumerate}
+	\item tratamientoMasUsadoPorDiagnostico
+	\item medicoMasAltas
+	\end{enumerate}
+	\item 2 Funcionalidades de nivel alto.
+	\begin{enumerate}
+	\item listarMedicosTratantesPaciente
+	\item diagnosticoPacienteMedico
+	\end{enumerate}
+	\item Nota: Además de estas funcionalidades, se implementaron: 
+	\begin{itemize}
+	\item Selectores
+	\item Constructores
+	\item Modificadores
+	\item Verificadores de pertenencias
+	\end{itemize}
+	\end{itemize}
+
+Para ver en detalle las implementaciones desarrolladas, favor dirigirse al Anexo de codigo fuente, adjunto al final del rpesente documento.
 	
-
-
 \section{ANÁLISIS DE RESULTADOS}
-	En el desarrollo, solo se desarrollaron las funcionalidades que a juicio del estudiante fueran abordables. Es por esta razón que los resultados, teniendo en cuenta unica y exclusivamente las funcionales trabajadas, son muy buenos. Ya que cada funcionalidad desarrollada, logra dar solución a lo que se solicitó por parte de FastClinic. \\
-	Quizás, mirándolo desde otra perspectiva, no son los mejores resultados ya que no se logra dar solución a todo el abanico de funcionalidades presentadas, sin embargo se logra cubrir una gran parte de ellas, superando con creces el mínimo exigido. 
+En el desarrollo, solo se desarrollaron las funcionalidades que a juicio del estudiante fueran abordables con repsecto al tiempo reducido con el que disponia. Es por esta razón que los resultados, teniendo en cuenta unica y exclusivamente las funcionales trabajadas, no cumplen con lo esperado. Sin embargo, cada funcionalidad desarrollada, logra dar solución a lo que se solicitó por parte de FastClinic. \\
+
 	\subsection{Alcance de la solución}
+	En concreto, se alcanza a cumplir y sobrepasar en baja intensidad el mínimo exigido. Este alcance no satisface al estudiante, sin embargo, es realmente lo que se implementa.
 
+\newpage
 \section{CONCLUSIÓN}
-Durante el desarrollo del software, se presentaron diversas complicaciones. Por una parte, los errores de redacción del enunciado del proyecto propiciaron confusiones del estudiante en cuestión y generaron retardos en la implementación de las funcionalidades solicitadas. Luego de haber "entendido" lo que se solicitaba, y faltando no más de dos días para la entrega del proyecto, llega información de aclaración de las dudas respecto de estas funcionalidades. Esta información de ultimo minuto genera un trabajo inesperado de corrección y refinamiento de procesos que no estaba contemplado en un principio. \\
+Durante el desarrollo del software, se presentaron diversas complicaciones. Por una parte, los errores de redacción del enunciado del proyecto propiciaron confusiones del estudiante en cuestión y generaron retardos en la implementación de las funcionalidades solicitadas. Por otro lado, el cambio de paradigma es dificil de comprender, recordemos que el efecto paradigma se hace presente cada vez que intentamos mirar las cosas desde otra perspectiva y nos impide salir de las reglas actuales, en sintesis, nos cuesta reconocer otras formas de hacer las cosas. \\
 
-Todas estas complicaciones pudieron ser superadas gracias a la dedicación y el arduo trabajo desempeñado, pero hay que saber aprender de los errores y buscar un mejor manejo de los tiempos, contemplando posibles detalles de ultimo minuto.\\
-
-En cuanto al lenguaje de programación C, pese a ser un lenguaje antiguo no se queda atrás en poder de procesamiento. Esto puede verse muy bien en los sistemas operativos provenientes de UNIX, porgramados mayoritariamente en C, sistemas robustos y utilizados para tareas de alta demanda como la gestión de un servidor. \\
+En cuanto al lenguaje de programación Scheme, pese a ser un lenguaje antiguo no se queda atrás en poder de procesamiento. Esto puede verse muy bien en la aplicación que tuvo este lenguaje en manejo de grandes tamaños de datos. Su papel en la actualidad es un tanto desconocido, pero no hay duda de que es un lenguaje poderoso aunque de dificil lectura y comprensión. \\
 
 Finalmente, se puede visualizar bajo la propia experiencia las diferencias entre los distintos paradigmas de programación, teniendo ahora como comparar objetivamente, en un ambiente real las ventajas y desventajas que nos otorga cada paradigma en cuestión.
 
 \section{REFERENCIAS}
 \begin{itemize}
-\item Andrés Marzal, Isabel Garcia. (Año no informado). Introducción a la programación con
-C. Departamento de lenguajes y sistemas informáticos: Universitat Jaume.
-\item Brian W. Kernighan and Dennis M. Ritchie. (1988). The C programming Language.
-EEUU: Prentice-Hall.
+\item Andrés Marzal, Isabel Garcia. (Año no informado). Introducción a la programación con Scheme. Departamento de lenguajes y sistemas informáticos: Universitat Jaume.
+\item  Eduardo Navas (2010). Programando con Racket 5.
+El Salvador: Universidad Centroamericana "Jose Simeón Cañas".
 \end{itemize}
 
 \newpage
